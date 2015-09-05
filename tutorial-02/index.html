@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Phaser - Making your first game, part 1</title>
+	<script type="text/javascript" src="/js/phaser.min.js"></script>
+	<style type="text/css">
+	body {
+		margin: 0;
+	}
+	</style>
+</head>
+<body>
+
+	<script type="text/javascript">
+
+		// create instance of phaser.game object
+		var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+		var platforms;
+		var player;
+		var baddies;
+		var cursors;
+		var stars;
+		var score = 0;
+		var scoreText;
+
+		function preload() {
+			game.load.image('sky', '/assets/sky.png');
+			game.load.image('ground', '/assets/platform.png');
+			game.load.image('star', '/assets/star.png');
+
+			game.load.spritesheet('dude', '/assets/dude.png', 32, 48);
+			game.load.spritesheet('baddie', '/assets/baddie.png', 32, 32);
+		}
+
+		function create() {
+			// enable arcade physics system
+			game.physics.startSystem(Phaser.Physics.ARCADE);
+
+			// add game background
+			game.add.sprite(0, 0, 'sky');
+
+			// platforms group contains ground and ledges
+			platforms = game.add.group();
+
+			// enable physics for any object in the platforms group
+			platforms.enableBody = true;
+
+			// create the ground
+			var ground = platforms.create(0, game.world.height - 64, 'ground');
+
+			// scale ground to fit width of the game
+			ground.scale.setTo(2, 2);
+
+			// prevent ground from falling away when jumping on it
+			ground.body.immovable = true;
+
+			// create two ledges
+			var ledge = platforms.create(400, 400, 'ground');
+
+			// prevent ledge from falling away when jumping on it
+			ledge.body.immovable = true;
+
+			ledge = platforms.create(-150, 250, 'ground');
+
+			// prevent ledge from falling away when jumping on it
+			ledge.body.immovable = true;
+
+			// PLAYER
+			// create the player
+			player = game.add.sprite(32, game.world.height - 150, 'dude');
+
+			// enable physics on the player
+			game.physics.arcade.enable(player);
+
+			// player physics properties
+			player.body.bounce.y = 0.2;
+			player.body.gravity.y = 300;
+			player.body.collideWorldBounds = true;
+
+			// player animations
+			player.animations.add('left', [0, 1, 2, 3], 10, true);
+			player.animations.add('right', [5, 6, 7, 8], 10, true);
+
+			// setup controls - populates the cursors object with four properties: up, down, left, right
+			cursors = game.input.keyboard.createCursorKeys();
+
+			// BADDIES
+			baddies = game.add.group();
+			baddies.enableBody = true;
+			for(var i = 0; i < 2; i++) {
+				var baddie = baddies.create(i * 750, 200, 'baddie');
+
+				game.physics.arcade.enable(baddie);
+
+				baddie.body.gravity.y = 150;
+				baddie.body.bounce.y = 0.2;
+				baddie.body.collideWorldBounds = true;
+
+				baddie.xSpeed = -1 * 75;
+
+				baddie.animations.add('left', [0, 1], 10, true);
+				baddie.animations.add('right', [2, 3], 10, true);
+
+				baddie.play('left');
+			}
+
+			// STARS
+			// stars group contains the stars
+			stars = game.add.group();
+
+			// enable physics for any object in the stars group
+			stars.enableBody = true;
+
+			// create stars (evenly spaced)
+			for(var i = 0; i < 12; i++) {
+				// create a star inside of the 'stars' group
+				var star = stars.create(i * 70, 0, 'star');
+
+				// set star gravity and random bounce value
+				star.body.gravity.y = 150;
+				star.body.bounce.y = 0.7 + Math.random() * 0.2;
+			}
+
+			// SCORE
+			scoreText = game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+		}
+
+		function update() {
+
+			// collide the player and the stars with the platforms
+			game.physics.arcade.collide(player, platforms);
+			game.physics.arcade.collide(stars, platforms);
+			//game.physics.arcade.collide(baddies, platforms);
+
+			// check if player overlaps with a star or not
+			game.physics.arcade.overlap(player, stars, collectStar, null, this);
+
+			// reset the player velocity
+			player.body.velocity.x = 0;
+
+			if(cursors.left.isDown) {
+				// move to the left
+				player.body.velocity.x = -150;
+
+				// set player animations
+				player.animations.play('left');
+			}
+			else if (cursors.right.isDown) {
+				// move to the right
+				player.body.velocity.x = 150;
+
+				// set player animations
+				player.animations.play('right');
+			}
+			else {
+				// stand still
+				player.animations.stop();
+
+				// set player animation to standing still frame
+				player.frame = 4;
+			}
+
+			// allow the player to jump if they are touching the ground
+			if(cursors.up.isDown && player.body.touching.down) {
+				player.body.velocity.y = -350;
+			}
+
+			for(var i = 0; i < baddies.children.length; i++) {
+				var baddie = baddies.children[i];
+
+				game.physics.arcade.collide(baddie, platforms, moveBaddie);
+				game.physics.arcade.overlap(player, baddie, collideBaddie);
+
+				baddie.body.velocity.x = baddie.xSpeed;
+
+				if(baddie.xSpeed < 0) {
+					baddie.animations.play('left');
+				}
+				else {
+					baddie.animations.play('right');
+				}
+			}
+		}
+
+		function moveBaddie(baddie, platform) {
+
+			// if(baddie.xSpeed < 0 && baddie.x < platform.x) {
+			// 	console.log('left edge of platform');
+			// 	baddie.xSpeed *= -1;
+			// }
+			// else if(baddie.xSpeed < 0 && baddie.x <= 0) {
+			// 	console.log('left edge of world');
+			// 	baddie.xSpeed *= -1;
+			// }
+			// else if(baddie.xSpeed > 0 && baddie.x + baddie.width >= game.world.width) {
+			// 	console.log('right edge of world');
+			// 	baddie.xSpeed *= -1;
+			// }
+			// else if(baddie.xSpeed > 0 && baddie.x + baddie.width > platform.x + platform.width) {
+			// 	console.log('right edge of platform');
+			// 	baddie.xSpeed *= -1;
+			// }
+
+			if(
+				(baddie.xSpeed < 0 && baddie.x < platform.x) // left edge of platform
+				|| (baddie.xSpeed < 0 && baddie.x <= 0) // left edge of world
+				|| (baddie.xSpeed > 0 && baddie.x + baddie.width >= game.world.width) // right edfe of world
+				|| (baddie.xSpeed > 0 && baddie.x + baddie.width > platform.x + platform.width) // right edge of platform
+			) {
+				baddie.xSpeed *= -1;
+			}
+		}
+
+		function collideBaddie(player, baddie) {
+			// deduct player score
+			score -= 10;
+			if(score < 0) {
+				score = 0;
+			}
+			scoreText.text = 'Score: ' + score;
+		}
+
+		function collectStar(player, star) {
+			// remove star from the screen
+			star.kill();
+
+			// add and update the score
+				score += 10;
+				scoreText.text = 'Score: ' + score;
+		}
+
+	</script>
+
+</body>
+</html>
