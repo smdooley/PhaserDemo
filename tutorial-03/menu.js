@@ -1,6 +1,8 @@
-Dool.Menu = function(game) {};
+var menu = function(game) {
+  console.log('menu');
+};
 
-Dool.Menu.prototype = {
+menu.prototype = {
   create: function() {
     // var title = this.game.add.sprite(160,160,"gametitle");
 		// title.anchor.setTo(0.5,0.5);
@@ -14,6 +16,6 @@ Dool.Menu.prototype = {
     btn.anchor.setTo(0.5, 0.5);
   },
   onPlay: function() {
-    this.game.state.start('game');
+    this.game.state.start('play');
   }
 }

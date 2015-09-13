@@ -1,14 +1,16 @@
-Dool.Game = function(game) {
+var play = function(game) {
+  console.log('play');
+
   var platforms;
   var player;
   var baddies;
   var cursors;
   var stars;
-  Dool.score = 0;
-  Dool.scoreText;
+  var score;
+  var scoreText;
 };
 
-Dool.Game.prototype = {
+play.prototype = {
   create: function() {
 
     // enable arcade physics system
@@ -107,7 +109,8 @@ Dool.Game.prototype = {
 
 
     // SCORE
-    Dool.scoreText = this.game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+    score = 0;
+    scoreText = this.game.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
   },
   update: function() {
 
@@ -154,7 +157,8 @@ Dool.Game.prototype = {
       var baddie = baddies.children[i];
 
       this.game.physics.arcade.collide(baddie, platforms, this.moveBaddie);
-      this.game.physics.arcade.overlap(player, baddie, this.collideBaddie);
+      //this.game.physics.arcade.overlap(player, baddie, this.collideBaddie);
+      this.game.physics.arcade.overlap(player, baddie, this.gameOver);
 
       baddie.body.velocity.x = baddie.xSpeed;
 
@@ -178,8 +182,7 @@ Dool.Game.prototype = {
     if(
       (baddie.xSpeed < 0 && baddie.x < platform.x) // left edge of platform
       || (baddie.xSpeed < 0 && baddie.x <= 0) // left edge of world
-      //|| (baddie.xSpeed > 0 && baddie.x + baddie.width >= this.game.world.width) // right edge of world
-      || (baddie.xSpeed > 0 && baddie.x + baddie.width >= Dool.GAME_WIDTH) // right edge of world
+      || (baddie.xSpeed > 0 && baddie.x + baddie.width >= app.GAME_WIDTH) // right edge of world
       || (baddie.xSpeed > 0 && baddie.x + baddie.width > platform.x + platform.width) // right edge of platform
     ) {
       baddie.xSpeed *= -1;
@@ -187,18 +190,18 @@ Dool.Game.prototype = {
   },
   collideBaddie: function(player, baddie) {
     // deduct player score
-    // Dool.score -= 10;
-    // if(Dool.score < 0) {
-    //   Dool.score = 0;
-    // }
-    // Dool.scoreText.text = 'Score: ' + Dool.score;
+    score -= 10;
+    if(score < 0) {
+      score = 0;
+    }
+    scoreText.text = 'Score: ' + score;
   },
   collectStar: function(player, star) {
     // remove star from the screen
     star.kill();
 
     // add and update the score
-    Dool.score += 10;
-    Dool.scoreText.text = 'Score: ' + Dool.score;
+    score += 10;
+    scoreText.text = 'Score: ' + score;
   }
 }

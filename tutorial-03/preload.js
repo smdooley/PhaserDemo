@@ -1,9 +1,8 @@
-Dool.Preload = function(game) {
-  Dool.GAME_WIDTH = 800;
-	Dool.GAME_HEIGHT = 600;
+var preload = function(game) {
+  console.log('preload');
 };
 
-Dool.Preload.prototype = {
+preload.prototype = {
   preload: function() {
     this.game.load.image('sky', '/assets/sky.png');
     this.game.load.image('ground', '/assets/platform.png');

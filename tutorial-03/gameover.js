@@ -1,6 +1,8 @@
-Dool.GameOver = function(game) {};
+var gameover = function(game) {
+  console.log('gameover');
+};
 
-Dool.GameOver.prototype = {
+gameover.prototype = {
   init: function(score) {
     alert("Score: " + score);
   },

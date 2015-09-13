@@ -1,11 +1,13 @@
-var Dool = {
-  score : 0,
-  orientated: false
+var app = {
+  GAME_WIDTH: 800,
+  GAME_HEIGHT: 600
 };
 
-Dool.Boot = function(game){};
+var boot = function(game){
+  console.log('boot');
+};
 
-Dool.Boot.prototype = {
+boot.prototype = {
   // a method called when a state starts, it is passed an argument to enable sharing data between states
   //init: function() {},
   // a method called when a state starts, it is used for loading assets before anything else
