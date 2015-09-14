@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Phaser - Making your first game, part 1</title>
+	<script type="text/javascript" src="/js/phaser.min.js"></script>
+	<script type="text/javascript" src="boot.js"></script>
+	<script type="text/javascript" src="preload.js"></script>
+	<script type="text/javascript" src="menu.js"></script>
+	<script type="text/javascript" src="game.js"></script>
+	<script type="text/javascript" src="gameover.js"></script>
+	<style type="text/css">
+	body {
+		margin: 0;
+	}
+	</style>
+</head>
+<body>
+
+	<script type="text/javascript">
+		(function(){
+			var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+
+			game.state.add('Boot', App.Boot);
+			game.state.add('Preload', App.Preload);
+			game.state.add('Menu', App.Menu);
+			game.state.add('Game', App.Game);
+			game.state.add('GameOver', App.GameOver);
+
+			game.state.start('Boot');
+		})();
+	</script>
+</body>
+</html>
