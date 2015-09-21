@@ -100,7 +100,7 @@ App.Game.prototype = {
       // star.body.gravity.y = 150;
       // star.body.bounce.y = 0.7 + Math.random() * 0.2;
 
-      this.stars.add(new App.Star(this.game, i * 70, 0, 200));
+      this.stars.add(new App.Star(this.game, i * 70, 0));
     }
 
     this.score = 0;
