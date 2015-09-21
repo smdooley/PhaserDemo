@@ -65,22 +65,24 @@ App.Game.prototype = {
     // BADDIES
     this.baddies = this.add.group();
     this.baddies.enableBody = true;
-    for(var i = 0; i < 2; i++) {
-      var baddie = this.baddies.create(i * 750, 200, 'baddie');
-
-      this.physics.arcade.enable(baddie);
-
-      baddie.body.gravity.y = 150;
-      baddie.body.bounce.y = 0.2;
-      baddie.body.collideWorldBounds = true;
-
-      baddie.xSpeed = -1 * 75;
-
-      baddie.animations.add('left', [0, 1], 10, true);
-      baddie.animations.add('right', [2, 3], 10, true);
-
-      baddie.play('left');
-    }
+    // for(var i = 0; i < 2; i++) {
+    //   var baddie = this.baddies.create(i * 750, 200, 'baddie');
+    //
+    //   this.physics.arcade.enable(baddie);
+    //
+    //   baddie.body.gravity.y = 150;
+    //   baddie.body.bounce.y = 0.2;
+    //   baddie.body.collideWorldBounds = true;
+    //
+    //   baddie.xSpeed = -1 * 75;
+    //
+    //   baddie.animations.add('left', [0, 1], 10, true);
+    //   baddie.animations.add('right', [2, 3], 10, true);
+    //
+    //   baddie.play('left');
+    // }
+    this.baddies.add(new App.Baddie(this.game, 0, 200));
+    this.baddies.add(new App.Baddie(this.game, 750, 200));
 
     // STARS
     // stars group contains the stars
@@ -91,12 +93,14 @@ App.Game.prototype = {
 
     // create stars (evenly spaced)
     for(var i = 0; i < 12; i++) {
-      // create a star inside of the 'stars' group
-      var star = this.stars.create(i * 70, 0, 'star');
+      // // create a star inside of the 'stars' group
+      // var star = this.stars.create(i * 70, 0, 'star');
+      //
+      // // set star gravity and random bounce value
+      // star.body.gravity.y = 150;
+      // star.body.bounce.y = 0.7 + Math.random() * 0.2;
 
-      // set star gravity and random bounce value
-      star.body.gravity.y = 150;
-      star.body.bounce.y = 0.7 + Math.random() * 0.2;
+      this.stars.add(new App.Star(this.game, i * 70, 0, 200));
     }
 
     this.score = 0;
